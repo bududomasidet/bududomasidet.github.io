@@ -1,67 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="authorization_endpoint" href="https://indieauth.com/auth">
-  <link rel="token_endpoint" href="https://tokens.indieauth.com/token">
-  <!-- To use social readers via microsub, follow these steps.
-    (Details: https://indieweb.org/Microsub#Getting_Started)
-    1. After publishing this to your domain, sign in to https://aperture.p3k.io/login with your domain
-    2. You will see a <link> tag displayed on your dashboard that looks like:
-      <link rel="microsub" href="https://aperture.p3k.io/microsub/000">
-    3. Copy that <link> tag and paste it after this HTML comment.
-    4. Publish the updated page!
-   -->
-  <title>My New Website</title>
-  <style>
-    @media (prefers-color-scheme: dark) {
-      html { background-color: #111111; color: #fbfbfb; }
-      a { color: #ca8465; }
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather App</title>
+<style>
     body {
-      line-height: 1.6;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
-      text-align: center;
-      margin: 1rem auto;
-      min-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: #f4f4f9;
+        color: #333;
+        font-family: Arial, sans-serif;
     }
-    img.u-photo { border-radius: 50%; }
-    ul { padding: 0; list-style: none; }
-  </style>
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
 </head>
-
 <body>
-  <!-- Reference for representative h-card properties: https://microformats.org/wiki/h-card -->
-  <main class="h-card" rel="author">
-    <!-- Uncomment and add __your_image__ to display a photo!
-      <img class="u-photo" alt="My profile photo" src="__your_image__" />
-    -->
-    <h1>
-      I'm <span class="p-name">Dmitry</span>.
-    </h1>
+<div>
+    <h1>Current Weather</h1>
+    <p id="weather-details"></p>
+    <img id="weather-image" src="" alt="Weather Image">
+</div>
 
-    <p class="p-note">
-      ...and I am a human on the Internet.
-    </p>
+<script>
+// Sample weather data as provided
+const weatherData = {
+    "lat": 33.44,
+    "lon": -94.04,
+    "timezone": "America/Chicago",
+    "timezone_offset": -18000,
+    "current": {
+        "dt": 1684929490,
+        "sunrise": 1684926645,
+        "sunset": 1684977332,
+        "temp": 292.55,
+        "feels_like": 292.87,
+        "pressure": 1014,
+        "humidity": 89,
+        "dew_point": 290.69,
+        "uvi": 0.16,
+        "clouds": 53,
+        "visibility": 10000,
+        "wind_speed": 3.13,
+        "wind_deg": 93,
+        "wind_gust": 6.71,
+        "weather": [
+            {
+                "id": 803,
+                "main": "Clouds",
+                "description": "broken clouds",
+                "icon": "04d"
+            }
+        ]
+    }
+};
 
-    <ul>
-      <!-- Replace __this_page__ with your domain -->
-      <li><a class="u-uid u-url" href="__this_page__">My New Website</a></li>
+function determineSeason(dt) {
+    const date = new Date(dt * 1000);
+    const month = date.getMonth();
+    if (month >= 3 && month <= 5) {
+        return 'spring';
+    } else if (month >= 6 && month <= 8) {
+        return 'summer';
+    } else if (month >= 9 && month <= 11) {
+        return 'autumn';
+    } else {
+        return 'winter';
+    }
+}
 
-      <!-- Update or remove the below links!
-        Replace _mygithubid_ with your GitHub username -->
-      <li><a class="u-url" href="https://github.com/_mygithubid_" rel="me">@_mygithubid_</a></li>
+function determineCondition(weather) {
+    const main = weather[0].main.toLowerCase();
+    if (main.includes('rain') || main.includes('snow')) {
+        return 'precipitation';
+    } else {
+        return 'emptySky';
+    }
+}
 
-      <!-- Replace _mytwitterid_ with your Twitter username -->
-      <li><a class="u-url" href="https://twitter.com/_mytwitterid_" rel="me">@_mytwitterid_</a></li>
-    </ul>
-  </main>
+function determineDayTime(sunrise, sunset, dt) {
+    return (dt >= sunrise && dt <= sunset) ? 'light' : 'dark';
+}
+
+const currentSeason = determineSeason(weatherData.current.dt);
+const currentCondition = determineCondition(weatherData.current.weather);
+const currentDayTime = determineDayTime(weatherData.current.sunrise, weatherData.current.sunset, weatherData.current.dt);
+
+document.getElementById('weather-details').innerHTML = `Season: ${currentSeason}, Condition: ${currentCondition}, Day Time: ${currentDayTime}`;
+
+// You would replace this URL with an actual image path depending on the conditions
+document.getElementById('weather-image').src = "https://example.com/path_to_image_based_on_conditions.jpg";
+
+</script>
 </body>
-
 </html>
+
