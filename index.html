@@ -29,38 +29,6 @@
 </div>
 
 <script>
-// Sample weather data as provided
-const weatherData = {
-    "lat": 33.44,
-    "lon": -94.04,
-    "timezone": "America/Chicago",
-    "timezone_offset": -18000,
-    "current": {
-        "dt": 1684929490,
-        "sunrise": 1684926645,
-        "sunset": 1684977332,
-        "temp": 292.55,
-        "feels_like": 292.87,
-        "pressure": 1014,
-        "humidity": 89,
-        "dew_point": 290.69,
-        "uvi": 0.16,
-        "clouds": 53,
-        "visibility": 10000,
-        "wind_speed": 3.13,
-        "wind_deg": 93,
-        "wind_gust": 6.71,
-        "weather": [
-            {
-                "id": 803,
-                "main": "Clouds",
-                "description": "broken clouds",
-                "icon": "04d"
-            }
-        ]
-    }
-};
-
 function determineSeason(dt) {
     const date = new Date(dt * 1000);
     const month = date.getMonth();
@@ -88,14 +56,32 @@ function determineDayTime(sunrise, sunset, dt) {
     return (dt >= sunrise && dt <= sunset) ? 'light' : 'dark';
 }
 
-const currentSeason = determineSeason(weatherData.current.dt);
-const currentCondition = determineCondition(weatherData.current.weather);
-const currentDayTime = determineDayTime(weatherData.current.sunrise, weatherData.current.sunset, weatherData.current.dt);
+  const apiKey = '50dca242661f6c511f3e746f3380f2d9'; // Replace 'YOUR_API_KEY_HERE' with your actual API key
+        const latitude = 36.2710; // Example latitude
+        const longitude = 136.8986; // Example longitude
+        const excludeParts = 'minutely,daily,alerts'; // Parts to exclude
 
-document.getElementById('weather-details').innerHTML = `Season: ${currentSeason}, Condition: ${currentCondition}, Day Time: ${currentDayTime}`;
+        const apiUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&exclude=${excludeParts}&appid=${apiKey}`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Weather Data:', data);
+                // document.getElementById('weather').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+
+                const currentSeason = determineSeason(data.current.dt);
+                const currentCondition = determineCondition(data.current.weather);
+                const currentDayTime = determineDayTime(data.current.sunrise, data.current.sunset, data.current.dt);
+
+                document.getElementById('weather-details').innerHTML = `Season: ${currentSeason}, Condition: ${currentCondition}, Day Time: ${currentDayTime}`;
+            })
+            .catch(error => {
+                console.error('Error fetching weather data:', error);
+                document.getElementById('weather').textContent = 'Failed to fetch weather data.';
+            });
+
 
 // You would replace this URL with an actual image path depending on the conditions
-document.getElementById('weather-image').src = "https://example.com/path_to_image_based_on_conditions.jpg";
 
 </script>
 </body>
