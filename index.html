@@ -63,7 +63,10 @@ function determineDayTime(sunrise, sunset, dt) {
 
         const apiUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&exclude=${excludeParts}&appid=${apiKey}`;
 
-        fetch(apiUrl)
+        fetch(apiUrl, {
+            credentials: 'omit', // Do not send or receive cookies
+            cache: 'no-store'    // Do not store or use any cached version of the response
+        })
             .then(response => response.json())
             .then(data => {
                 console.log('Weather Data:', data);
